@@ -1,0 +1,6 @@
+- [x] Fix role check in Pengerjaan controller: change 'staff_it' to 'internal'
+- [x] Remove Staff_it controller, views, and routes
+- [x] Add role filter dropdown in users/list.php to filter users by role
+- [x] Update User controller to support filtering users by role
+- [x] Remove "PIC Staff IT" menu item from sidebar
+- [ ] Test unified user management with role filtering and request assignment
