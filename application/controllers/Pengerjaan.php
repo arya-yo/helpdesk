@@ -41,7 +41,7 @@ class Pengerjaan extends CI_Controller {
     $data['username'] = $this->session->userdata('username');
     $data['role']     = $this->session->userdata('role');
 
-    $data['requests'] = $this->Pengerjaan_model->get_all_requests();
+    $data['requests'] = $this->Pengerjaan_model->get_requests_by_pic($this->user_id);
 
     $this->load->view('pengerjaan', $data);
 }

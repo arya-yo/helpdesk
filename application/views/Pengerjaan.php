@@ -59,6 +59,7 @@ include APPPATH . 'views/templates/sidebar.php';
                     <th>Level</th>
                     <th>PIC</th>
                     <th>Status</th>
+                    <th>Duration</th>
                     <th>Dibuat</th>
                     <th>Aksi</th>
                   </tr>
@@ -78,8 +79,8 @@ include APPPATH . 'views/templates/sidebar.php';
                       </td>
                       <td><?= $req->pic_name ?: '-'; ?></td>
                       <td>
-                        <?php if ($req->status == 'pending'): ?>
-                          <span class="badge bg-warning">Pending</span>
+                        <?php if ($req->status == 'approved'): ?>
+                          <span class="badge bg-warning">Approved</span>
                         <?php elseif ($req->status == 'in_progress'): ?>
                           <span class="badge bg-info">In Progress</span>
                         <?php elseif ($req->status == 'completed'): ?>
@@ -88,9 +89,24 @@ include APPPATH . 'views/templates/sidebar.php';
                           <span class="badge bg-danger">Rejected</span>
                         <?php endif; ?>
                       </td>
+                      <td>
+                        <?php if ($req->status == 'completed' && $req->start_time && $req->finish_time): ?>
+                          <?php
+                          $start = strtotime($req->start_time);
+                          $finish = strtotime($req->finish_time);
+                          $diff = $finish - $start;
+                          $days = floor($diff / 86400);
+                          $hours = floor(($diff % 86400) / 3600);
+                          $minutes = floor(($diff % 3600) / 60);
+                          echo ($days > 0 ? $days . 'd ' : '') . ($hours > 0 ? $hours . 'h ' : '') . $minutes . 'm';
+                          ?>
+                        <?php else: ?>
+                          -
+                        <?php endif; ?>
+                      </td>
                       <td><?= $req->created_at; ?></td>
                       <td>
-                        <?php if ($req->status == 'pending'): ?>
+                        <?php if ($req->status == 'approved'): ?>
                           <a href="<?= base_url('pengerjaan/start/'.$req->id); ?>" class="btn btn-success btn-sm">
                             <i class="fas fa-play"></i> Mulai
                           </a>
@@ -99,8 +115,8 @@ include APPPATH . 'views/templates/sidebar.php';
                             <i class="fas fa-stop"></i> Selesai
                           </a>
                         <?php endif; ?>
-                        <a href="<?= base_url('pengerjaan/reject/'.$req->id); ?>" 
-                           onclick="return confirm('Yakin tolak request ini?')" 
+                        <a href="<?= base_url('pengerjaan/reject/'.$req->id); ?>"
+                           onclick="return confirm('Yakin tolak request ini?')"
                            class="btn btn-danger btn-sm">
                           <i class="fas fa-times"></i> Tolak
                         </a>

@@ -9,8 +9,10 @@ class User_model extends CI_Model {
 
     // login user
     public function login($username, $password) {
+        $this->db->group_start();
         $this->db->where('username', $username);
         $this->db->or_where('email', $username);
+        $this->db->group_end();
         $query = $this->db->get('users');
 
         if ($query->num_rows() == 1) {
@@ -37,6 +39,12 @@ class User_model extends CI_Model {
     // ambil user berdasarkan role
     public function get_users_by_role($role) {
         $this->db->where('role', $role);
+        return $this->db->get('users')->result();
+    }
+
+    // ambil user yang bisa jadi PIC (internal atau it_manager)
+    public function get_pic_users() {
+        $this->db->where_in('role', ['internal', 'it_manager']);
         return $this->db->get('users')->result();
     }
 

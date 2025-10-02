@@ -3,32 +3,34 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Pengerjaan_model extends CI_Model {
 
-    // Ambil semua request yang sudah di-approve (status != rejected)
+    // Ambil semua request yang sudah di-assign (status approved, in_progress or completed)
     public function get_all_requests() {
         $this->db->select('r.*, u.username, p.username as pic_name');
         $this->db->from('requests r');
         $this->db->join('users u', 'u.id = r.user_id', 'left');  // pemohon
         $this->db->join('users p', 'p.id = r.pic_id', 'left');   // PIC
-        $this->db->where_in('r.status', ['pending', 'in_progress', 'completed']);
+        $this->db->where_in('r.status', ['approved', 'in_progress', 'completed']);
         $this->db->order_by('r.created_at', 'DESC');
         return $this->db->get()->result();
     }
 
-    // Mulai pengerjaan (ubah status jadi in_progress, isi PIC)
+    // Mulai pengerjaan (ubah status jadi in_progress, set start_time)
     public function start_request($id, $pic_id) {
         $this->db->where('id', $id);
         return $this->db->update('requests', [
             'status' => 'in_progress',
             'pic_id' => $pic_id,
+            'start_time' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s')
         ]);
     }
 
-    // Selesaikan pengerjaan (ubah status jadi completed)
+    // Selesaikan pengerjaan (ubah status jadi completed, set finish_time)
     public function complete_request($id) {
         $this->db->where('id', $id);
         return $this->db->update('requests', [
             'status' => 'completed',
+            'finish_time' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s')
         ]);
     }
@@ -59,7 +61,7 @@ class Pengerjaan_model extends CI_Model {
         $this->db->join('users u', 'u.id = r.user_id', 'left');  // pemohon
         $this->db->join('users p', 'p.id = r.pic_id', 'left');   // PIC
         $this->db->where('r.pic_id', $pic_id);
-        $this->db->where_in('r.status', ['pending', 'in_progress', 'completed']);
+        $this->db->where_in('r.status', ['approved', 'in_progress', 'completed']);
         $this->db->order_by('r.created_at', 'DESC');
         return $this->db->get()->result();
     }

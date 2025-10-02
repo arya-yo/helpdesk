@@ -22,9 +22,19 @@ class Auth extends CI_Controller {
         $username = $this->input->post('username');
         $password = $this->input->post('password');
 
+        // Validasi input tidak kosong
+        if (empty($username) || empty($password)) {
+            $this->session->set_flashdata('error', 'Username dan password harus diisi!');
+            redirect('auth');
+            return;
+        }
+
+        log_message('info', 'Login attempt for username: ' . $username);
+
         $user = $this->User_model->login($username, $password);
-        
+
         if ($user) {
+            log_message('info', 'Login successful for: ' . $username);
             // simpan session
             $this->session->set_userdata([
                 'user_id' => $user->id,
@@ -34,15 +44,9 @@ class Auth extends CI_Controller {
             ]);
             redirect('dashboard');
         } else {
+            log_message('info', 'Login failed for: ' . $username);
             $this->session->set_flashdata('error', 'Username atau password salah!');
             redirect('auth');
-            $user = $this->User_model->login($username, $password);
-            log_message('info', 'Login attempt for username: ' . $username . ', User found: ' . ($user ? 'yes' : 'no'));
-            if ($user) {
-                log_message('info', 'Password verify: ' . (password_verify($password, $user->password) ? 'yes' : 'no'));
-                // ... rest of code
-}
-
         }
     }
 

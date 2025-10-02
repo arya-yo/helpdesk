@@ -24,7 +24,7 @@
             <!--begin::Sidebar Menu-->
             <ul
               class="nav sidebar-menu flex-column"
-              data-lte-toggle="treeview"
+              data-widget="treeview"
               role="navigation"
               aria-label="Main navigation"
               data-accordion="false"
@@ -38,12 +38,14 @@
                   </p>
                 </a>
               </li>
+              <?php if ($role == 'external'): ?>
               <li class="nav-item">
                 <a href="<?php echo base_url('dashboard/request'); ?>" class="nav-link <?php echo isset($active_request) ? $active_request : ''; ?>">
                   <i class="nav-icon bi bi-clipboard-check"></i>
                   <p>Request</p>
                 </a>
               </li>
+              <?php endif; ?>
               <?php if ($role != 'external'): ?>
               <li class="nav-item">
                 <a href="<?php echo base_url('pengerjaan'); ?>" class="nav-link <?php echo isset($active_pengerjaan) ? $active_pengerjaan : ''; ?>">
@@ -52,35 +54,34 @@
                 </a>
               </li>
               <?php endif; ?>
-             <?php if ($role == 'it_manager'): ?>
-              <li class="nav-item has-treeview <?php echo isset($active_master) ? $active_master : ''; ?>" id="sb-master-head">
-                  <a id="sb-master" href="#" class="nav-link">
-                      <i class="nav-icon fas fa-database"></i> <!-- ganti ikon Master Data -->
+              <?php if ($role == 'it_manager'): ?>
+              <li class="nav-item">
+                <a href="<?php echo base_url('dashboard/request'); ?>" class="nav-link <?php echo isset($active_request) ? $active_request : ''; ?>">
+                  <i class="nav-icon bi bi-clipboard-check"></i>
+                  <p>Request Masuk</p>
+                </a>
+              </li>
+              <li class="nav-item <?php echo (isset($active_master) && $active_master == 'menu-open') ? 'menu-open' : ''; ?>" id="sb-master-head">
+                  <a id="sb-master" href="#" class="nav-link <?php echo isset($active_master) ? '' : ''; ?>">
+                      <i class="nav-icon fas fa-database"></i>
                       <p>
                           Master Data
-                          <i class="right fas fa-angle-left"></i>
+                          <i class="nav-icon bi bi-chevron-right ms-auto"></i>
                       </p>
                   </a>
-                  <ul class="nav nav-treeview">
+                  <ul class="nav nav-treeview" style="<?php echo (isset($active_master) && $active_master == 'menu-open') ? 'display: block;' : 'display: none;'; ?>">
                       <li class="nav-item">
                           <a href="<?php echo base_url('users/list'); ?>" class="nav-link <?php echo isset($active_users_list) ? $active_users_list : ''; ?>">
-                              <i class="nav-icon fas fa-users"></i>
+                              <i class="nav-icon fas fa-circle" style="font-size: 0.5rem;"></i>
                               <p>Create Users</p>
                           </a>
                       </li>
                       <li class="nav-item">
                           <a href="<?php echo base_url('web_application'); ?>" class="nav-link <?php echo isset($active_webapp) ? $active_webapp : ''; ?>">
-                              <i class="nav-icon fas fa-globe"></i>
+                              <i class="nav-icon fas fa-circle" style="font-size: 0.5rem;"></i>
                               <p>Create Web App</p>
                           </a>
                       </li>
-                      <li class="nav-item">
-                          <a href="<?php echo base_url('staff_it'); ?>" class="nav-link <?php echo isset($active_staff_it) ? $active_staff_it : ''; ?>">
-                              <i class="nav-icon fas fa-user-cog"></i>
-                              <p>Lempar Request ke Staff IT</p>
-                          </a>
-                      </li>
-
                   </ul>
               </li>
               <?php endif; ?>

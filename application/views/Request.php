@@ -8,8 +8,8 @@ $active_users = '';
 $active_master = '';
 $active_list = '';
 $active_create = '';
-include APPPATH . 'views/templates/header.php';
-include APPPATH . 'views/templates/sidebar.php';
+include 'templates/header.php';
+include 'templates/sidebar.php';
 ?>
 
       <!--begin::App Main-->
@@ -97,8 +97,10 @@ include APPPATH . 'views/templates/sidebar.php';
                         <tr>
                           <th>Title</th>
                           <th>Status</th>
+                          <th>Rejection Reason</th>
                           <th>Level</th>
                           <th>Created</th>
+                          <th>File</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -106,8 +108,14 @@ include APPPATH . 'views/templates/sidebar.php';
                           <tr>
                             <td><?php echo $request['title']; ?></td>
                             <td><?php echo ucfirst($request['status']); ?></td>
+                            <td><?php echo ($request['status'] == 'rejected' && !empty($request['rejection_reason'])) ? $request['rejection_reason'] : '-'; ?></td>
                             <td><?php echo ucfirst($request['level']); ?></td>
                             <td><?php echo $request['created_at']; ?></td>
+                            <td>
+                              <?php if (!empty($request['file_upload'])): ?>
+                                <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#fileModal" onclick="document.getElementById('fileFrame').src='<?php echo base_url('uploads/' . $request['file_upload']); ?>'">Detail</button>
+                              <?php endif; ?>
+                            </td>
                           </tr>
                         <?php endforeach; ?>
                       </tbody>
@@ -123,4 +131,22 @@ include APPPATH . 'views/templates/sidebar.php';
         <!--end::App Content-->
       </main>
       <!--end::App Main-->
-<?php include APPPATH . 'views/templates/footer.php'; ?>
+
+<!-- Modal -->
+<div class="modal fade" id="fileModal" tabindex="-1" role="dialog" aria-labelledby="fileModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="fileModalLabel">File Detail</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <iframe id="fileFrame" src="" width="100%" height="500px" frameborder="0"></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+
+<?php include 'templates/footer.php'; ?>

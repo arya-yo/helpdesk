@@ -26,9 +26,9 @@ class Dashboard extends CI_Controller {
     $data['total_users'] = $this->db->count_all('users');
     $data['total_selesai'] = $this->db->where('status', 'selesai')->count_all_results('requests');
 
-    // Ambil list user (hanya untuk IT Manager)
+    // Ambil list user yang bisa jadi PIC (hanya untuk IT Manager)
     $data['users'] = ($this->session->userdata('role') == 'it_manager')
-        ? $this->User_model->get_all_users()
+        ? $this->User_model->get_pic_users()
         : [];
 
     // Data session
@@ -93,18 +93,25 @@ class Dashboard extends CI_Controller {
             if ($level) {
                 $this->db->where('level', $level);
             }
+            // Exclude rejected and approved requests from dashboard/request list for IT manager
+            $this->db->where('status !=', 'rejected');
+            $this->db->where('status !=', 'approved');
             $data['requests'] = $this->Request_model->get_all_requests();
             $data['level'] = $level;
             $data['role'] = $role;
             $data['username'] = $username;
+            $data['users'] = $this->User_model->get_pic_users();
             $this->load->view('request_list', $data);
         } else {
-            // Show form or list of own requests
+            // Show form or list of own requests or assigned requests
             if ($this->input->post()) {
                 $this->load->library('upload');
                 $config['upload_path'] = './uploads/';
                 $config['allowed_types'] = 'jpg|png|pdf|doc|docx';
                 $config['max_size'] = 2048;
+                if (!is_dir('./uploads/')) {
+                    mkdir('./uploads/', 0755, true);
+                }
                 $this->upload->initialize($config);
 
                 $file_path = NULL;
@@ -128,7 +135,13 @@ class Dashboard extends CI_Controller {
                 }
                 redirect('dashboard/request');
             }
-            $data['requests'] = $this->Request_model->get_requests_by_user($this->session->userdata('user_id'));
+            if ($role == 'internal') {
+                // Show assigned requests for PIC (staff IT)
+                $data['requests'] = $this->Request_model->get_requests_by_pic($this->session->userdata('user_id'));
+            } else {
+                // Show own requests for regular users
+                $data['requests'] = $this->Request_model->get_requests_by_user($this->session->userdata('user_id'));
+            }
             $data['applications'] = $this->Web_application_model->get_all_applications();
             $data['role'] = $role;
             $data['username'] = $username;
@@ -145,8 +158,67 @@ class Dashboard extends CI_Controller {
         if ($this->input->post()) {
             $status = $this->input->post('status');
             $pic_id = $this->input->post('pic_id');
-            $this->Request_model->update_request($id, array('status' => $status, 'pic_id' => $pic_id));
-            $this->session->set_flashdata('success', 'Request updated successfully!');
+            $rejection_reason = $this->input->post('rejection_reason');
+
+            // If approved, set status to 'approved' and clear pic_id and rejection_reason
+            if ($status === 'approved') {
+                $status = 'approved';
+                $pic_id = null; // ensure pic_id is null, not empty string
+                $rejection_reason = null;
+            }
+
+            // If rejected, require rejection_reason
+            if ($status === 'rejected' && empty($rejection_reason)) {
+                $this->session->set_flashdata('error', 'Please provide a reason for rejection.');
+                redirect('dashboard/request');
+                return;
+            }
+
+            $update_data = array(
+                'status' => $status,
+                'pic_id' => $pic_id,
+                'rejection_reason' => $rejection_reason
+            );
+
+            $update_result = $this->Request_model->update_request($id, $update_data);
+            if ($update_result) {
+                $this->session->set_flashdata('success', 'Request updated successfully!');
+            } else {
+                $this->session->set_flashdata('error', 'Failed to update request.');
+            }
+            redirect('dashboard/request'); // Redirect to dashboard/request after approval/rejection
+        }
+        redirect('dashboard/request');
+    }
+
+    public function approve_save($id)
+    {
+        if ($this->session->userdata('role') != 'it_manager') {
+            redirect('dashboard');
+        }
+
+        if ($this->input->post()) {
+            $pic_id = $this->input->post('pic_id');
+
+            if (empty($pic_id)) {
+                $this->session->set_flashdata('error', 'Please select a PIC.');
+                redirect('dashboard/request');
+                return;
+            }
+
+            $update_data = array(
+                'status' => 'approved',
+                'pic_id' => $pic_id,
+                'rejection_reason' => null
+            );
+
+            $update_result = $this->Request_model->update_request($id, $update_data);
+            if ($update_result) {
+                $this->session->set_flashdata('success', 'Request approved and PIC assigned successfully!');
+            } else {
+                $this->session->set_flashdata('error', 'Failed to approve request.');
+            }
+            redirect('pengerjaan');
         }
         redirect('dashboard/request');
     }

@@ -1,83 +1,60 @@
-<!--begin::Footer-->
-      <footer class="app-footer">
-        <!--begin::To the end-->
-        <div class="float-end d-none d-sm-inline">Anything you want</div>
-        <!--end::To the end-->
-        <!--begin::Copyright-->
-        <strong>
-          Copyright &copy; 2014-2025&nbsp;
-          <a href="https://adminlte.io" class="text-decoration-none">Amazink Labs</a>.
-        </strong>
-        All rights reserved.
-        <!--end::Copyright-->
-      </footer>
-      <!--end::Footer-->
-    </div>
+</div>
     <!--end::App Wrapper-->
-    <!--begin::Script-->
+
     <!--begin::Third Party Plugin(OverlayScrollbars)-->
     <script
       src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"
       crossorigin="anonymous"
     ></script>
-    <!--end::Required Plugin(popperjs for Bootstrap 5)-->
-    <script
-      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-      crossorigin="anonymous"
-    ></script>
-    <!--end::Required Plugin(popperjs for Bootstrap 5)-->
+    <!--end::Third Party Plugin(OverlayScrollbars)-->
+
     <!--begin::Required Plugin(Bootstrap 5)-->
     <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       crossorigin="anonymous"
     ></script>
+    <!--end::Required Plugin(Bootstrap 5)-->
+
+    <!--begin::Required Plugin(AdminLTE)-->
+    <script src="<?php echo base_url('Template/dist/js/adminlte.js'); ?>"></script>
     <!--end::Required Plugin(AdminLTE)-->
-    <script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0/dist/js/adminlte.min.js"></script>
+
+    <!-- Custom script for sidebar toggle -->
     <script>
-      const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';
-      const Default = {
-        scrollbarTheme: 'os-theme-light',
-        scrollbarAutoHide: 'leave',
-        scrollbarClickScroll: true,
-      };
-      document.addEventListener('DOMContentLoaded', function () {
-        const sidebarWrapper = document.querySelector(SELECTOR_SIDEBAR_WRAPPER);
-
-        // Disable OverlayScrollbars on mobile devices to prevent touch interference
-        const isMobile = window.innerWidth <= 992;
-
-        if (
-          sidebarWrapper &&
-          OverlayScrollbarsGlobal?.OverlayScrollbars !== undefined &&
-          !isMobile
-        ) {
-          OverlayScrollbarsGlobal.OverlayScrollbars(sidebarWrapper, {
-            scrollbars: {
-              theme: Default.scrollbarTheme,
-              autoHide: Default.scrollbarAutoHide,
-              clickScroll: Default.scrollbarClickScroll,
-            },
+      document.addEventListener('DOMContentLoaded', function() {
+        const masterLink = document.getElementById('sb-master');
+        const masterHead = document.getElementById('sb-master-head');
+        
+        if (masterLink && masterHead) {
+          masterLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Toggle menu-open class
+            masterHead.classList.toggle('menu-open');
+            
+            // Toggle submenu visibility
+            const submenu = masterHead.querySelector('.nav-treeview');
+            if (submenu) {
+              if (masterHead.classList.contains('menu-open')) {
+                submenu.style.display = 'block';
+              } else {
+                submenu.style.display = 'none';
+              }
+            }
+            
+            // Toggle chevron icon
+            const icon = this.querySelector('.bi-chevron-right');
+            if (icon) {
+              if (masterHead.classList.contains('menu-open')) {
+                icon.classList.remove('bi-chevron-right');
+                icon.classList.add('bi-chevron-down');
+              } else {
+                icon.classList.remove('bi-chevron-down');
+                icon.classList.add('bi-chevron-right');
+              }
+            }
           });
         }
-      });
-    </script>
-    <!--end::Script-->
-    <script>
-      // Right-click context menu for user menu
-      document.addEventListener('DOMContentLoaded', function() {
-        const userMenu = document.querySelector('.user-menu');
-        const contextMenu = document.getElementById('user-context-menu');
-
-        userMenu.addEventListener('contextmenu', function(e) {
-          e.preventDefault();
-          contextMenu.style.display = 'block';
-          contextMenu.style.left = e.pageX + 'px';
-          contextMenu.style.top = e.pageY + 'px';
-        });
-
-        document.addEventListener('click', function() {
-          contextMenu.style.display = 'none';
-        });
       });
     </script>
   </body>

@@ -10,10 +10,11 @@ class Request_model extends CI_Model {
     }
 
     public function get_all_requests() {
-        $this->db->select('requests.*, users.username as user_name, web_applications.name as app_name');
+        $this->db->select('requests.*, users.username as user_name, web_applications.name as app_name, pic_users.username as pic_name');
         $this->db->from('requests');
         $this->db->join('users', 'users.id = requests.user_id');
         $this->db->join('web_applications', 'web_applications.id = requests.application_id', 'left');
+        $this->db->join('users as pic_users', 'pic_users.id = requests.pic_id', 'left');
         $this->db->order_by('created_at', 'DESC');
         return $this->db->get()->result_array();
     }
@@ -38,6 +39,16 @@ class Request_model extends CI_Model {
         $this->db->join('users', 'users.id = requests.user_id');
         $this->db->join('web_applications', 'web_applications.id = requests.application_id', 'left');
         $this->db->where('requests.status', $status);
+        $this->db->order_by('created_at', 'DESC');
+        return $this->db->get()->result_array();
+    }
+
+    public function get_requests_by_pic($pic_id) {
+        $this->db->select('requests.*, users.username as user_name, web_applications.name as app_name');
+        $this->db->from('requests');
+        $this->db->join('users', 'users.id = requests.user_id');
+        $this->db->join('web_applications', 'web_applications.id = requests.application_id', 'left');
+        $this->db->where('requests.pic_id', $pic_id);
         $this->db->order_by('created_at', 'DESC');
         return $this->db->get()->result_array();
     }

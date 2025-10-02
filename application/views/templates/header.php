@@ -24,7 +24,6 @@
     <!--begin::Accessibility Features-->
     <!-- Skip links will be dynamically added by accessibility.js -->
     <meta name="supported-color-schemes" content="light dark" />
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0/dist/css/adminlte.min.css" as="style" />
     <!--end::Accessibility Features-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
